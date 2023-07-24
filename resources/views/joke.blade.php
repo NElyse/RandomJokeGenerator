@@ -21,7 +21,7 @@
 
                             <label class="card-header  text-white" for="categorySelect"><h4>Select Category:</h4></label>
                             <select id="categorySelect" class="form-select">
-                                <option value="Any">Any</option>
+                                <option value=${response.category}>Any</option>
                                 <option value="Miscellaneous">Miscellaneous</option>
                                 <option value="Programming">Programming</option>
                                 <option value="Dark">Dark</option>
