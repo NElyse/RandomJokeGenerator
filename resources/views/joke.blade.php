@@ -18,10 +18,9 @@
                     </div>
                     <div class="card-body">
                         <div class="form-group mb-3">
-
                             <label class="card-header  text-white" for="categorySelect"><h4>Select Category:</h4></label>
                             <select id="categorySelect" class="form-select">
-                                <option value=${response.category}>Any</option>
+                                <option value="Any">Any</option>
                                 <option value="Miscellaneous">Miscellaneous</option>
                                 <option value="Programming">Programming</option>
                                 <option value="Dark">Dark</option>
@@ -32,41 +31,61 @@
                         <div id="contentContainer"></div>
                         <button id="fetchButton" class="btn btn-primary mt-5 mb-3">Generate New JOKE</button>
                     </div>
-
-                    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-                    <script>
-                        $(document).ready(function() {
-                            $('#fetchButton').on('click', function() {
-                                const selectedCategory = $('#categorySelect').val();
-                                const apiUrl = `https://sv443.net/jokeapi/v2/joke/${selectedCategory}`;
-
-                                $.ajax({
-                                    url: apiUrl,
-                                    type: 'GET',
-                                    dataType: 'json',
-                                    success: function(response) {
-                                        const contentDiv = $('#contentContainer');
-                                        contentDiv.empty();
-                                        contentDiv.append(`
-                                            <div class="alert alert-info">
-                                                <h4 class="alert-heading">Category: ${response.category}</h4>
-                                                <p class="mb-0">${response.joke}</p>
-                                            </div>
-                                        `);
-                                    },
-                                    error: function(xhr, status, error) {
-                                        console.error('Error fetching data:', error);
-                                    }
-                                });
-                            });
-                        });
-                    </script>
                 </div>
             </div>
         </div>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#fetchButton').on('click', function() {
+                const selectedCategory = $('#categorySelect').val();
+                const apiUrl = `https://sv443.net/jokeapi/v2/joke/${selectedCategory}`;
+
+                $.ajax({
+                    url: apiUrl,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(response) {
+                        const contentDiv = $('#contentContainer');
+                        contentDiv.empty();
+                        if (response.type === 'single') {
+                            contentDiv.append(`
+                                <div class="alert alert-info">
+                                    <h4 class="alert-heading">Category: ${response.category}</h4>
+                                    <p class="mb-0">${response.joke}</p>
+                                </div>
+                            `);
+                        } else if (response.type === 'twopart') {
+                            contentDiv.append(`
+                                <div class="alert alert-info">
+                                    <h4 class="alert-heading">Category: ${response.category}</h4>
+                                    <p class="mb-0">${response.setup}</p>
+                                    <p class="mb-0">${response.delivery}</p>
+                                </div>
+                            `);
+                        } else {
+                            showError('No joke found in the selected category, Please try again later.');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        showError('Error fetching joke. Please try again later.');
+                    }
+                });
+            });
+
+            function showError(errorMessage) {
+                const contentDiv = $('#contentContainer');
+                contentDiv.empty();
+                contentDiv.append(`
+                    <div class="alert alert-danger">
+                        <p class="mb-0">${errorMessage}</p>
+                    </div>
+                `);
+            }
+        });
+    </script>
 </body>
 
 </html>
